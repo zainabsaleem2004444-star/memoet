@@ -41,13 +41,6 @@ mix phx.server
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-## Deployment
-
-- Docker: [docker-compose.yml](./docker-compose.yml).
-
-- Ubuntu: [ubuntu.sh](scripts/ubuntu.sh)
-
-- Heroku: [heroku.sh](scripts/heroku.sh)
 
 ### Environment
 
