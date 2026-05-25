@@ -1,0 +1,18 @@
+<header class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="<%= Routes.deck_path(@conn, :show, @deck) %>">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    Create a new note
+  </h1>
+</header>
+
+<%= form_for @changeset, Routes.deck_note_path(@conn, :create, @deck), [class: "mt-8 space-y-8"], fn f -> %>
+
+  <%= render("_input.html", conn: @conn, deck: @deck, note: @note, f: f) %>
+
+  <div class="py-6 text-center space-x-2">
+    <%= submit "Create", class: "btn-primary" %>
+    <%= link "Cancel", to: Routes.deck_path(@conn, :show, @deck), class: "btn-outline" %>
+  </div>
+<% end %>

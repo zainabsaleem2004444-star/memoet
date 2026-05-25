@@ -1,0 +1,35 @@
+<header class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="<%= Routes.deck_note_path(@conn, :show, @deck, @note) %>">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    Edit note
+  </h1>
+</header>
+
+<%= form_for @changeset,
+  Routes.deck_note_path(@conn, :update, @deck, @note),
+  [class: "mt-8 space-y-8"], fn f -> %>
+
+  <%= render("_input.html", conn: @conn, deck: @deck, note: @note, f: f) %>
+
+  <div class="text-center space-x-2" x-data="{ confirmDelete: false }">
+    <%= submit "Save", class: "btn-primary" %>
+    <button
+      type="button"
+      class="btn-warning"
+      @click="confirmDelete = confirm('If you want to delete this note, click \'Confirm delete\' to delete it permantly')"
+      x-show="!confirmDelete"
+      x-cloak>
+      Delete
+    </button>
+
+    <%= link "Confirm delete",
+        to: Routes.deck_note_path(@conn, :delete, @deck, @note),
+        method: "DELETE",
+        class: "btn-danger",
+        "x-show": "confirmDelete",
+        "x-cloak": true
+    %>
+  </div>
+<% end %>

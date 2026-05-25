@@ -1,0 +1,33 @@
+<header class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="/">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    My account
+  </h1>
+</header>
+
+<ul class="space-y-4">
+  <li class="list-disc list-inside">
+    Email address:
+    <span class="font-bold"><%= @user.email %></span>
+  </li>
+
+  <li class="list-disc list-inside">
+    Member since:
+    <span class="font-bold"><%= Timex.format!(@user.inserted_at, "{relative}", :relative) %></span>
+  </li>
+
+  <li class="list-disc list-inside">
+    API token:
+    <span class="font-bold"><%= @user.api_token %></span>
+    <%= link "Refresh", to: Routes.account_path(@conn, :refresh_api_token), method: "POST", class: "btn-outline text-xs ml-4" %>
+  </li>
+</ul>
+
+<section>
+  <p class="flex items-center justify-start py-10 text-sm opacity-70">
+    <%= Heroicons.Outline.logout(class: "w-6 h-6 mr-1") %>
+    <%= link "Log out", to: Routes.pow_session_path(@conn, :delete), method: "DELETE", class: "text-link" %>
+  </p>
+</section>

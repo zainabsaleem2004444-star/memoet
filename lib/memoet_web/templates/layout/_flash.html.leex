@@ -1,0 +1,22 @@
+<%= if get_flash(@conn, :info) do %>
+  <div class="alert alert-info" role="alert" :class="{'hidden': !open}" x-data="{open: true}">
+    <section class="alert__content">
+      <span><%= get_flash(@conn, :info) %></span>
+      <a @click="open = false" class="text-link">
+        <%= Heroicons.Outline.x(class: "w-3 h-3") %>
+      </a>
+    </section>
+  </div>
+<% end %>
+
+<%= if get_flash(@conn, :error) do %>
+  <div class="alert alert-danger" role="alert" :class="{'hidden': !open}" x-data="{open: true}">
+    <section class="alert__content">
+      <span><%= get_flash(@conn, :error) %></span>
+      <a @click="open = false" class="text-link">
+        <%= Heroicons.Outline.x(class: "w-3 h-3") %>
+      </a>
+    </section>
+  </div>
+<% end %>
+

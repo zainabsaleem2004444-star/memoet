@@ -1,0 +1,43 @@
+<nav class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="/">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    Community decks
+  </h1>
+</nav>
+
+<section>
+  <ul>
+    <%= for deck <- @public_decks do %>
+      <%= render("_public_deck.html", assigns: assigns, conn: @conn, deck: deck) %>
+    <% end %>
+
+    <%= if @public_decks == [] do %>
+      <li class="text-center">No decks is listed here yet.</li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="pagination__wrapper">
+  <p class="text-sm">
+    <%= @metadata.total_count |> format_number %> total
+  </p>
+
+  <ul class="pagination__button">
+    <%= if @metadata.before do %>
+      <li>
+        <a href="<%= Routes.community_deck_path(@conn, :public_index, %{ before: @metadata.before }) %>" class="pagination__nav">
+          <%= Heroicons.Outline.chevron_left(class: "w-6 h-6") %>
+        </a>
+      </li>
+    <% end %>
+    <%= if @metadata.after do %>
+      <li>
+        <a href="<%= Routes.community_deck_path(@conn, :public_index, %{ after: @metadata.after }) %>" class="pagination__nav">
+          <%= Heroicons.Outline.chevron_right(class: "w-6 h-6") %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</section>

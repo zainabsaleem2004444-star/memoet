@@ -1,0 +1,125 @@
+<section x-data="{ hint: false, choice: -1, check: false, answer: '', options: <%= Poison.encode!(@note.options) %> }">
+  <%= form_for @conn, @action,
+    [method: "PUT", class: "mt-8 space-y-8", onkeydown: "return event.key != 'Enter';"], fn _f -> %>
+    <section class="flex flex-col space-y-8">
+        <%= if @note.image do %>
+          <img src="<%= @note.image %>" alt="<%= @note.title %> image" />
+        <% end %>
+
+        <%= if @note.content != "" do %>
+          <article class="prose">
+            <%= raw md_to_html(@note.content) %>
+          </article>
+        <% end %>
+
+        <%= case @note.type do %>
+          <%= "multiple_choice" -> %>
+            <div class="flex flex-col items-start justify-center w-full p-4 border bg-indigo-50 rounded-md space-y-2" x-cloak>
+              <div class="space-y-3">
+                <%= for {o, i} <- Enum.with_index(@note.options) do %>
+                  <label class="flex items-start">
+                    <input
+                      type="checkbox"
+                      x-model="options[<%= i %>].answer"
+                      class="mt-1 mr-2 form-checkbox"
+                      :class="{
+                        'border-green-600 text-green-600': check && (options[<%= i %>].answer || false) == options[<%= i %>].correct,
+                        'border-red-600 text-red-600': check && (options[<%= i %>].answer || false) != options[<%= i %>].correct,
+                      }"
+                    >
+                    <p
+                      :class="{
+                        'text-green-600': check && (options[<%= i %>].answer || false) == options[<%= i %>].correct,
+                        'text-red-600': check && (options[<%= i %>].answer || false) != options[<%= i %>].correct,
+                      }"
+                    >
+                      <%= o.content %>
+                    </p>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+          <% "type_answer" -> %>
+            <div class="flex flex-col items-start justify-center w-full p-4 border bg-indigo-50 rounded-md space-y-2" x-cloak>
+              <input
+                autocomplete="off"
+                type="text"
+                name="answer"
+                x-model="answer"
+                class="w-full form-control"
+                :class="{
+                  'border-green-600': check && options.some((o) => o.content.toLowerCase() == answer.toLowerCase()),
+                  'border-red-600': check && !options.some((o) => o.content.toLowerCase() == answer.toLowerCase()),
+                }"
+              >
+              <template x-if="check">
+                <ul class="space-y-2">
+                  <template x-for="option in options" :key="option.content">
+                    <li class="list-disc list-inside" x-text="option.content">
+                  </template>
+                </ul>
+              </template>
+            </div>
+          <% "flash_card" -> %>
+        <% end %>
+
+        <%= if @note.hint do %>
+          <div
+            class="p-3 border bg-blue-50 prose rounded-md"
+            x-show="hint || check"
+            x-transition:enter="x-enter"
+            x-transition:enter-start="x-enter-start"
+            x-transition:enter-end="x-enter-end"
+            x-cloak
+          >
+            <%= raw md_to_html(@note.hint) %>
+          </div>
+        <% end %>
+    </section>
+
+    <section class="pt-2 text-center" x-cloak>
+      <input type="hidden" name="card_id" value="<%= @card_id %>">
+      <input type="hidden" name="visit_time" value="<%= :os.system_time(:millisecond) %>">
+
+      <div
+        x-show="check" class="flex items-center justify-between space-x-3"
+        x-transition:enter="x-enter"
+        x-transition:enter-start="x-enter-start-reverse"
+        x-transition:enter-end="x-enter-end-reverse"
+      >
+        <%= for {label, choice, btn} <- [
+          {"Again", 1, "btn-danger"}, {"Hard", 2, "btn-warning"}, {"Good", 3, "btn-primary"}, {"Easy", 4, "btn-success"}
+        ] do %>
+          <button
+            type="submit"
+            name="answer"
+            value="<%= choice %>"
+            class="relative text-sm flex-1 flex-col space-y-0 btn-icon <%= btn %>"
+            @click="choice = <%= choice %>"
+          >
+            <%= label %>
+            <span class="text-xs">
+              <%= @intervals[choice] %>
+            </span>
+            <div
+              class="absolute inset-0 flex items-center justify-center bg-gray-700 opacity-50 rounded-md"
+              x-show="choice == <%= choice %>"
+            >
+              <%= render_icon(:loading) %>
+            </div>
+          </button>
+        <% end %>
+      </div>
+
+      <a class="btn-primary"
+        @click="check = true; setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);"
+        x-show="!check">Submit</a>
+
+      <%= if @note.hint && @note.type != "flash_card" do %>
+        <a class="btn-outline" @click="hint = true" x-show="!check && !hint">
+          Hint
+        </a>
+      <% end %>
+    </section>
+  <% end %>
+</section>

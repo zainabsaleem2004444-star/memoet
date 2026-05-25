@@ -1,0 +1,15 @@
+<main role="main">
+  <%= render("_flash.html", assigns) %>
+
+  <%= if assigns[:width_full] == nil do %>
+    <%= render("_header.html", assigns: assigns, conn: @conn) %>
+  <% end %>
+
+  <section class="<%= if assigns[:width_full], do: "w-full", else: "max-w-3xl px-4 mx-auto" %>">
+    <%= @inner_content %>
+  </section>
+
+  <%= if !assigns[:width_full] do %>
+    <%= render("_footer.html", assigns) %>
+  <% end %>
+</main>

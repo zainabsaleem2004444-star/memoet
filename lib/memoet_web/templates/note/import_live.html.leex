@@ -1,0 +1,86 @@
+<header class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="<%= Routes.deck_path @socket, :show, @deck_id %>">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    Import notes
+  </h1>
+</header>
+
+<section>
+  <%= cond do %>
+  <% @import_total == 0 -> %>
+    <p>
+      Make sure your file follows the
+      <a href="<%= Routes.static_path(@socket, "/files/memoet_import_template.csv") %>" target="_blank" class="inline text-indigo-500 text-link">CSV template</a>, we only support CSV files for now.
+    <p>
+    <form id="import-form" phx-submit="import" phx-change="validate" class="mt-8 space-y-6">
+      <label>
+        <div class="flex items-center justify-center w-full p-10 bg-gray-100 cursor-pointer rounded-md">
+          <span class="flex items-center justify-center">
+            <%= Heroicons.Outline.upload(class: "w-6 h-6 mr-1") %>
+            <%= case @uploads.csv.entries do %>
+              <% [] -> %>
+                Select a CSV file...
+              <% entries -> %>
+                <%= for entry <- entries do %>
+                  <p class="text-sm font-italic"><%= entry.client_name %> - <%= entry.progress %>%</p>
+                <% end %>
+            <% end %>
+          </span>
+        </div>
+        <%= live_file_input(@uploads.csv, class: "hidden") %>
+      </label>
+
+      <p class="text-sm opacity-70">
+        * We <strong>do not</strong> detect duplicate notes when importing.
+      </p>
+
+      <%= if not Enum.empty?(@uploads.csv.entries) do %>
+        <div class="text-center space-x-2">
+          <button type="submit" class="relative btn-primary">
+            Import
+            <%= if Enum.any?(@uploads.csv.entries, fn e -> e.progress > 0 end) do %>
+              <div class="absolute inset-0 flex items-center justify-center bg-gray-700 opacity-50 rounded-md">
+                <%= render_icon(:loading) %>
+              </div>
+            <% end %>
+          </button>
+        </div>
+      <% end %>
+    </form>
+
+  <% @import_total > @import_progress -> %>
+    <h2 class="flex items-center justify-center text-lg">
+      <%= Heroicons.Outline.cloud_upload(class: "w-6 h-6 mr-1") %>
+      Importing <%= @import_progress %> / <%= @import_total %> notes...
+    </h2>
+    <div class="relative w-full h-3 mt-4 overflow-hidden rounded-full">
+      <div class="absolute w-full h-full bg-gray-200"></div>
+      <div class="absolute h-full bg-green-500" style="width:<%= @import_progress / ( case @import_total do 0 -> 1; other -> other; end) * 100 %>%"></div>
+    </div>
+
+  <% @import_total == @import_progress -> %>
+    <h2 class="flex items-center justify-center text-lg">
+      <%= Heroicons.Outline.thumb_up(class: "w-6 h-6 mr-1") %>
+      Imported <%= @import_total |> format_number %> notes successfully!
+    </h2>
+    <div class="mt-10 text-center">
+      <%= link "View notes", to: Routes.deck_path(@socket, :show, @deck_id), class: "btn-primary" %>
+    </div>
+  <% end %>
+
+  <%= if @import_error do %>
+    <div class="p-2 mt-4 bg-gray-100 rounded space-y-2">
+      <p>There was an error while importing your notes:</p>
+
+      <div class="text-red-500 ">
+        <%= @import_error.message %>
+      </div>
+    </div>
+
+    <div class="mt-10 text-center">
+      <%= link "Back", to: Routes.deck_path(@socket, :show, @deck_id), class: "btn-outline" %>
+    </div>
+  <% end %>
+</section>

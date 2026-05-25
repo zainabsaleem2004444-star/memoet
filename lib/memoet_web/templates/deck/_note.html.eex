@@ -1,0 +1,20 @@
+<li
+   class="flex items-center justify-between border-b border-gray-100 space-x-2"
+   x-data="{ menuOpen: false }"
+>
+  <a
+    class="justify-start block py-1 truncate text-link"
+    href="<%= Routes.deck_note_path @conn, :show, @deck, @note %>"
+  >
+    <h2
+      class="flex-1 block truncate"
+      title="<%= @note.title %>"
+    >
+      <%= @note.title %>
+    </h2>
+    <p class="text-sm truncate opacity-70">
+      <%= @note.content %>
+    </p>
+  </a>
+  <%= render("_note_menu.html", conn: @conn, deck: @deck, note: @note) %>
+</li>

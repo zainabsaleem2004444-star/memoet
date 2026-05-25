@@ -1,0 +1,30 @@
+<li class="block px-4 py-3 my-4 border border-gray-300 rounded-lg">
+  <div class="flex items-center justify-around space-x-3">
+    <div class="flex-1 truncate space-y-1">
+      <a href="<%= Routes.community_deck_path @conn, :public_show, @deck %>" class="flex items-center justify-start text-link">
+        <span class="mr-2 opacity-70">
+          <%= Heroicons.Outline.globe(class: "w-4 h-4") %>
+        </span>
+        <h2 class="truncate md:text-lg">
+          <%= @deck.name %>
+        </h2>
+      </a>
+
+      <p class="text-xs truncate opacity-50">
+        Created <%= Timex.format!(@deck.inserted_at, "{relative}", :relative) %>
+      </p>
+    </div>
+
+    <a href="<%= Routes.community_deck_path(@conn, :public_practice, @deck) %>"
+      class="flex-none hidden text-sm btn-outline md:block">
+      Preview
+    </a>
+
+    <a href="<%= Routes.community_deck_path(@conn, :public_practice, @deck) %>"
+      class="text-sm text-indigo-500 text-link md:hidden">
+      <%= Heroicons.Outline.play(class: "w-7 h-7") %>
+    </a>
+
+    <%= render("_public_deck_menu.html", conn: @conn, deck: @deck) %>
+  </div>
+</li>

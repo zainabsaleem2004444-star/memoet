@@ -1,0 +1,129 @@
+defmodule Memoet.Notes do
+  @moduledoc """
+  Note service
+  """
+
+  import Ecto.Query
+
+  alias Memoet.Repo
+  alias Memoet.Notes.Note
+  alias Memoet.Cards
+  alias Memoet.Req
+
+  @spec list_notes(map) :: map()
+  def list_notes(params) do
+    {cursor_before, cursor_after, limit} = Req.get_pagination_params(params)
+
+    Note
+    |> where(^filter_where(params))
+    |> order_by(desc: :updated_at, asc: :id)
+    |> Repo.paginate(
+      before: cursor_before,
+      after: cursor_after,
+      include_total_count: true,
+      cursor_fields: [{:updated_at, :desc}, {:id, :asc}],
+      limit: limit
+    )
+  end
+
+  @spec list_public_notes(map) :: map()
+  def list_public_notes(params) do
+    cursor_fields = [{:inserted_at, :desc}, {:id, :asc}]
+
+    {cursor_before, cursor_after, limit} = Req.get_pagination_params(
+      params
+      |> Map.merge(%{"cursor_fields" => cursor_fields})
+    )
+
+    Note
+    |> where(^filter_where(params))
+    |> order_by(desc: :inserted_at, asc: :id)
+    |> Repo.paginate(
+      before: cursor_before,
+      after: cursor_after,
+      include_total_count: true,
+      cursor_fields: cursor_fields,
+      limit: limit
+    )
+  end
+
+  @spec stream_notes(binary(), map) :: any()
+  def stream_notes(deck_id, _params \\ %{}) do
+    Note
+    |> where(deck_id: ^deck_id)
+    |> order_by(asc: :inserted_at)
+    |> Repo.stream()
+  end
+
+  @spec get_note!(binary(), binary()) :: Note.t()
+  def get_note!(id, user_id) do
+    Note
+    |> Repo.get_by!(id: id, user_id: user_id)
+  end
+
+  @spec get_note!(binary()) :: Note.t()
+  def get_note!(id) do
+    Note
+    |> Repo.get_by!(id: id)
+  end
+
+  @spec create_note(map()) :: {:ok, Note.t()} | {:error, Ecto.Changeset.t()}
+  def create_note(attrs \\ %{}) do
+    %Note{}
+    |> Note.changeset(attrs)
+    |> Note.clean_options()
+    |> Repo.insert()
+  end
+
+  @spec update_note(Note.t(), map()) :: {:ok, Note.t()} | {:error, Ecto.Changeset.t()}
+  def update_note(%Note{} = note, attrs) do
+    note
+    |> Note.changeset(attrs)
+    |> Note.clean_options()
+    |> Repo.update()
+  end
+
+  @spec create_note_with_card_transaction(map()) :: Ecto.Multi.t()
+  def create_note_with_card_transaction(note_params) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:note, fn _repo, %{} ->
+      create_note(note_params)
+    end)
+    |> Ecto.Multi.run(:card, fn _repo, %{note: note} ->
+      card_params =
+        note_params
+        |> Map.merge(%{"note_id" => note.id})
+
+      Cards.create_card(card_params)
+    end)
+  end
+
+  @spec delete_note!(binary(), binary()) :: Deck.t()
+  def delete_note!(id, user_id) do
+    Note
+    |> Repo.get_by!(id: id, user_id: user_id)
+    |> Repo.delete!()
+  end
+
+  @spec filter_where(map) :: Ecto.Query.DynamicExpr.t()
+  defp filter_where(attrs) do
+    Enum.reduce(attrs, dynamic(true), fn
+      {"user_id", value}, dynamic ->
+        dynamic([n], ^dynamic and n.user_id == ^value)
+
+      {"deck_id", value}, dynamic ->
+        dynamic([n], ^dynamic and n.deck_id == ^value)
+
+      {"title", value}, dynamic ->
+        dynamic([n], ^dynamic and ilike(n.title, ^value))
+
+      {"q", value}, dynamic ->
+        q = "%" <> value <> "%"
+        dynamic([n], ^dynamic and (ilike(n.title, ^q) or ilike(n.content, ^q)))
+
+      {_, _}, dynamic ->
+        # Not a where parameter
+        dynamic
+    end)
+  end
+end

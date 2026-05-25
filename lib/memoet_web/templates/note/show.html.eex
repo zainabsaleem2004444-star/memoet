@@ -1,0 +1,58 @@
+<header class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="<%= Routes.deck_path @conn, :show, @deck %>">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    <%= @note.title %>
+  </h1>
+  <%= if @deck.user_id == Pow.Plug.current_user(@conn).id do %>
+    <%= render(MemoetWeb.DeckView, "_note_menu.html", conn: @conn, deck: @deck, note: @note) %>
+  <% end %>
+</header>
+
+<section class="flex flex-col space-y-8">
+    <%= if @note.image do %>
+      <img src="<%= @note.image %>" alt="<%= @note.title %> image" />
+    <% end %>
+
+    <%= if @note.content != "" do %>
+      <article class="prose">
+        <%= raw md_to_html(@note.content) %>
+      </article>
+    <% end %>
+
+    <%= case @note.type do %>
+      <% "multiple_choice" -> %>
+        <div class="flex flex-col items-start justify-center w-full p-3 border bg-indigo-50 space-y-3 rounded-md">
+          <p class="w-full pb-2 font-bold border-b">
+            Multiple choice
+          </p>
+          <ul class="space-y-3">
+            <%= for o <- @note.options do %>
+              <li class="flex items-start">
+                <input type="checkbox" <%= if o.correct, do: "checked" %> class="mt-1 mr-2 form-checkbox" disabled>
+                <p><%= o.content %></p>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% "type_answer" -> %>
+        <div class="flex flex-col items-start justify-center w-full p-3 border bg-indigo-50 space-y-3 rounded-md">
+          <p class="w-full pb-2 font-bold border-b">
+            Type answer
+          </p>
+          <ul class="space-y-2">
+            <%= for o <- @note.options do %>
+              <li class="list-disc list-inside"><%= o.content %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% "flash_card" -> %>
+    <% end %>
+
+    <%= if @note.hint do %>
+      <div class="p-3 border bg-blue-50 prose rounded-md">
+        <%= raw md_to_html(@note.hint) %>
+      </div>
+    <% end %>
+</section>

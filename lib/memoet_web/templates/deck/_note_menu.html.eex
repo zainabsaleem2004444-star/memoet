@@ -1,0 +1,36 @@
+<span class="relative flex-none cursor-pointer" x-data="{menuOpen: false}">
+  <span @click="menuOpen = true">
+    <%= Heroicons.Outline.dots_vertical(class: "w-4 h-4 opacity-70") %>
+  </span>
+
+  <template x-if="menuOpen">
+    <ul
+      class="dropdown-wrapper"
+      x-transition:enter="x-enter"
+      x-transition:enter-start="x-enter-start"
+      x-transition:enter-end="x-enter-end"
+      x-transition:leave="x-leave"
+      x-transition:leave-end="x-leave-end"
+      @click.away="menuOpen = false"
+    >
+      <li>
+        <a href="<%= Routes.deck_note_path(@conn, :edit, @deck, @note) %>" class="dropdown-item">
+          <%= Heroicons.Outline.pencil_alt(class: "w-4 h-4 mr-1") %>
+          Edit note
+        </a>
+      </li>
+      <li>
+        <a href="<%= Routes.deck_note_path @conn, :new, @deck %>" class="dropdown-item">
+          <%= Heroicons.Outline.plus_circle(class: "w-4 h-4 mr-1") %>
+          New note
+        </a>
+      </li>
+      <li>
+        <a href="<%= Routes.deck_path(@conn, :practice, @deck, note_id: @note.id) %>" class="dropdown-item">
+          <%= Heroicons.Outline.play(class: "w-4 h-4 mr-1") %>
+          Practice note
+        </a>
+      </li>
+    </ul>
+  </template>
+</span>

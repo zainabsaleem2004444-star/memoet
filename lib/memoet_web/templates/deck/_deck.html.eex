@@ -1,0 +1,40 @@
+<li class="block px-3 py-3 my-4 border border-gray-300 rounded-lg">
+  <div class="flex items-center justify-around space-x-3">
+    <div class="flex-1 truncate space-y-1">
+      <a href="<%= Routes.deck_path @conn, :show, @deck %>" class="flex items-center justify-start text-link">
+        <span class="mr-2 opacity-70">
+          <%= if @deck.public do %>
+            <%= Heroicons.Outline.globe(class: "w-4 h-4") %>
+          <% else %>
+            <%= Heroicons.Outline.lock_closed(class: "w-4 h-4") %>
+          <% end %>
+        </span>
+
+        <h2 class="truncate md:text-lg" title="<%= @deck.name %>">
+          <%= @deck.name %>
+        </h2>
+      </a>
+
+      <p class="text-xs whitespace-normal opacity-50">
+      <%= case Memoet.Cards.count_today(Pow.Plug.current_user(@conn), [@deck]) do %>
+        <%= count -> %>
+          <%= count.due |> format_number %> due
+          ·
+          <%= count.new |> format_number %> new
+          ·
+          <%= count.total |> format_number %> total
+      <% end %>
+      </p>
+    </div>
+
+    <a href="<%= Routes.deck_path(@conn, :practice, @deck) %>" class="flex-none hidden text-sm btn-outline md:block">
+      Practice
+    </a>
+
+    <a href="<%= Routes.deck_path(@conn, :practice, @deck) %>" class="text-sm text-indigo-500 text-link md:hidden">
+      <%= Heroicons.Outline.play(class: "w-7 h-7") %>
+    </a>
+
+    <%= render("_deck_menu.html", conn: @conn, deck: @deck) %>
+  </div>
+</li>

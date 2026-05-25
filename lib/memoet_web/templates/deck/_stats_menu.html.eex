@@ -1,0 +1,24 @@
+<span class="relative flex-none cursor-pointer" x-data="{menuOpen: false}">
+  <span @click="menuOpen = true">
+    <%= Heroicons.Outline.dots_vertical(class: "w-4 h-4 opacity-70") %>
+  </span>
+
+  <template x-if="menuOpen">
+    <ul
+      class="dropdown-wrapper"
+      x-transition:enter="x-enter"
+      x-transition:enter-start="x-enter-start"
+      x-transition:enter-end="x-enter-end"
+      x-transition:leave="x-leave"
+      x-transition:leave-end="x-leave-end"
+      @click.away="menuOpen = false"
+    >
+      <li>
+        <a href="<%= Routes.deck_path(@conn, :practice, @deck) %>" class="dropdown-item">
+          <%= Heroicons.Outline.play(class: "w-4 h-4 mr-1") %>
+          Practice
+        </a>
+      </li>
+    </ul>
+  </template>
+</span>

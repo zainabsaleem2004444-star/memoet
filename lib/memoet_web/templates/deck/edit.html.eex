@@ -1,0 +1,102 @@
+<header class="header__wrapper">
+  <h1 class="header__title">
+    <a class="text-link" href="<%= Routes.deck_path @conn, :show, @deck %>">
+      <%= Heroicons.Outline.chevron_left(class: "w-6 h-6 mr-2") %>
+    </a>
+    Edit deck
+  </h1>
+</header>
+
+<section x-data="{ public: <%= @deck.public %>, confirmDelete: false }">
+  <%= form_for @changeset, Routes.deck_path(@conn, :update, @deck.id), [method: :put, class: "mt-8 space-y-6"], fn f -> %>
+    <div>
+      Deck name:
+      <%= text_input f, :name, value: @deck.name, required: true, class: "form-control form-block" %>
+      <%= error_tag f, :name %>
+    </div>
+
+    <div>
+      Learning order:
+      <%= select f, :learning_order, [
+        "Random": "random",
+        "First created": "first_created"
+        ], required: true, value: @deck.learning_order, class: "form-control w-full" %>
+    </div>
+
+    <div>
+      <label class="flex items-center justify-start my-4">
+        <%= checkbox f,
+          :shuffled,
+          class: "mr-2 form-checkbox",
+          checked: @deck.shuffled == true
+        %>
+        <p>
+          Shuffle options in multiple choice
+        </p>
+      </label>
+    </div>
+
+    <div>
+      New notes per day:
+      <%= number_input f, :new_per_day, required: true, value: @deck.new_per_day,
+        class: "form-control w-full" %>
+    </div>
+
+    <div class="flex items-center justify-start space-x-4">
+      <span class="flex items-center justify-center space-x-1">
+        <%= radio_button f, :public, false, checked: @deck.public == false, required: true,
+          "x-value": "public", "x-on:input": "public = false" %>
+        <%= label f, :public, "Private" %>
+      </span>
+      <span class="flex items-center justify-center space-x-1">
+        <%= radio_button f, :public, true, checked: @deck.public == true, required: true,
+          "x-value": "public", "x-on:input": "public = true" %>
+        <%= label f, :public, "Public" %>
+      </span>
+    </div>
+
+    <div x-show="public"
+      x-transition:enter="x-enter"
+      x-transition:enter-start="x-enter-start"
+      x-transition:enter-end="x-enter-end"
+      x-cloak>
+      Public link to share:
+      <input
+        type="text"
+        class="form-control form-block"
+        value="<%= MemoetWeb.Router.Helpers.url(@conn) <> Routes.community_deck_path(@conn, :public_show, @deck) %>"
+        readonly>
+
+      <label class="flex items-center justify-start my-4">
+        <%= checkbox f,
+          :listed,
+          class: "mr-2 form-checkbox",
+          checked: @deck.listed == true
+        %>
+        <p>
+          Show this deck on the community page
+        </p>
+      </label>
+    </div>
+
+    <div class="text-center space-x-2">
+      <%= submit "Save", class: "btn-primary" %>
+      <button
+        type="button"
+        class="btn-warning"
+        @click="confirmDelete = confirm('This will delete all the deck\'s notes, click \'Confirm delete\' to delete it permantly')"
+        x-show="!confirmDelete && !public"
+        x-cloak>
+        Delete
+      </button>
+
+      <%= link "Confirm delete",
+        to: Routes.deck_path(@conn, :delete, @deck),
+        method: "DELETE",
+        class: "btn-danger",
+        "x-show": "confirmDelete",
+        "x-cloak": true
+      %>
+    </div>
+  <% end %>
+</section>

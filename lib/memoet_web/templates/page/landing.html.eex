@@ -1,0 +1,205 @@
+<div class="border-b shadow-sm">
+  <div class="flex flex-col max-w-6xl p-4 mx-2 mx-auto">
+    <header class="flex items-center justify-around">
+      <a
+        to="/"
+        class="flex items-center justify-center flex-none focus:outline-none space-x-4"
+      >
+        <img class="h-6" src="<%= Routes.static_path(@conn, "/images/logo.svg") %>" alt="Logo" />
+      </a>
+      <span class="flex items-center justify-end flex-grow space-x-5">
+        <span class="items-center justify-end flex-grow hidden space-x-5 lg:flex">
+          <a href="#features" class="text-link">
+            Features
+          </a>
+          <a href="#how" class="text-link">
+            How it works
+          </a>
+        </span>
+        <a href="<%= Routes.pow_session_path(@conn, :new) %>" class="hidden lg:block btn-outline">
+          Log in
+        </a>
+        <a href="<%= Routes.signup_path(@conn, :new) %>" class="btn-primary">
+          Sign up
+        </a>
+      </span>
+    </header>
+  </div>
+</div>
+
+<section class="flex flex-col items-center justify-center p-4 text-center h-96 space-y-10 bg-gray-50">
+  <span class="max-w-2xl text-3xl">
+    Play your quizzes and recall them repeatly until you would never forget
+  </span>
+
+  <span class="flex items-center justify-center max-w-md space-x-4">
+    <a href="#how" class="btn-outline">
+      How it works
+    </a>
+    <a href="<%= Routes.signup_path(@conn, :new) %>" class="btn-primary">
+      Get started
+    </a>
+  </span>
+</section>
+
+<section
+  id="features"
+  class="flex flex-wrap max-w-6xl p-4 mx-auto rounded-t md:flex-nowrap"
+>
+  <section class="flex items-center justify-start flex-grow max-w-lg p-4">
+    <img
+      src='<%= Routes.static_path(@conn, "/images/quiz.png") %>'
+      alt="Play anywhere"
+      class="rounded-lg"
+    />
+  </section>
+  <section class="flex flex-col items-center justify-center flex-grow max-w-lg py-4 mx-auto text-center">
+    <h3 class="text-2xl">Practice your quizzes anywhere</h3>
+    <p>No installation. No software updates. Play it instantly.</p>
+  </section>
+</section>
+
+<div class="bg-gray-50">
+  <section class="flex flex-wrap-reverse max-w-6xl p-4 mx-auto md:flex-nowrap">
+      <section class="flex flex-col items-center justify-center flex-grow max-w-lg py-4 mx-auto text-center">
+        <h3 class="text-2xl">Never forget a thing</h3>
+        <p>
+          We use SuperMemo2 which is an Spaced Repetition algorithm to help
+          you memorize your quizzes. Forever.
+        </p>
+      </section>
+      <section class="flex items-center justify-end flex-grow max-w-lg p-4">
+        <img
+          src='<%= Routes.static_path(@conn, "/images/srs.png") %>'
+          alt="Forgetting curve"
+          class="rounded-lg"
+        />
+      </section>
+  </section>
+</div>
+
+<section
+  class="flex flex-wrap max-w-6xl p-4 mx-auto rounded-t md:flex-nowrap"
+>
+  <section class="flex items-center justify-start flex-grow max-w-lg p-4">
+    <img
+      src='<%= Routes.static_path(@conn, "/images/md.png") %>'
+      alt="Markdown support"
+      class="rounded-lg"
+    />
+  </section>
+  <section class="flex flex-col items-center justify-center flex-grow max-w-lg py-4 mx-auto text-center">
+    <h3 class="text-2xl">Markdown support</h3>
+    <p>
+      A minimal UI with rich Markdown support helps to
+      focus your mind on the content and nothing else.
+    </p>
+  </section>
+</section>
+
+<div class="bg-gray-50">
+  <section class="flex flex-wrap-reverse max-w-6xl p-4 mx-auto md:flex-nowrap">
+      <section class="flex flex-col items-center justify-center flex-grow max-w-lg py-4 mx-auto text-center">
+        <h3 class="text-2xl">Free and open source</h3>
+        <p>
+          Free as in free beer. Also free as in freedom.
+        </p>
+      </section>
+      <section class="flex items-center justify-end flex-grow max-w-lg p-4">
+        <img
+          src='<%= Routes.static_path(@conn, "/images/open.png") %>'
+          alt="Free and open source"
+          class="rounded-lg"
+        />
+      </section>
+  </section>
+</div>
+
+<section
+  id="how"
+  class="flex flex-col items-center justify-center w-full max-w-4xl p-4 mx-auto my-10 space-y-8"
+>
+  <h2 class="text-3xl text-indigo-800">How it works</h2>
+  <ul class="flex flex-col text-lg space-y-8">
+    <li>
+      <span class="inline-block w-8 pt-0.5 text-center text-white bg-indigo-600 rounded-full mr-2">
+        1
+      </span>
+      Create your own quizzes, bulk import, or clone a shared deck from our public library
+    </li>
+    <li>
+      <span class="inline-block w-8 pt-0.5 text-center text-white bg-indigo-600 rounded-full mr-2">
+        2
+      </span>
+      When you play a quiz or review a flashcard, we ask for your memory confidence, from <strong>Forget</strong> to <strong>Easy</strong>
+    </li>
+    <li>
+      <span class="inline-block w-8 pt-0.5 text-center text-white bg-indigo-600 rounded-full mr-2">
+        3
+      </span>
+      Base on your ratings, we will keep showing the hard more often and the easy less so
+    </li>
+  </ul>
+  <a class="btn-outline" href="https://memoet.gitbook.io/docs">Documentation</a>
+</section>
+
+<section class="flex flex-col items-center justify-center p-4 py-10 mx-auto text-center bg-gray-50 space-y-4">
+  <h2 class="text-2xl text-indigo-800">Ready to play some quizzes?</h2>
+  <p class="text-lg">Checkout some recent public decks from our users</p>
+  <ul class="flex flex-col items-center justify-start w-full max-w-3xl p-4">
+    <%= for deck <- @public_decks do %>
+      <li class="block w-full px-4 py-3 my-3 border border-gray-300 rounded-lg">
+        <div class="flex items-center justify-around space-x-3">
+          <div class="flex-1 truncate space-y-1">
+            <a href="<%= Routes.community_deck_path @conn, :public_show, deck %>" class="flex items-center justify-start text-link">
+              <span class="mr-1 opacity-70">
+                <%= Heroicons.Outline.globe(class: "w-5 h-5") %>
+              </span>
+              <h2 class="truncate md:text-lg">
+                <%= deck.name %>
+              </h2>
+            </a>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+  <%= link "Explore more", to: Routes.community_deck_path(@conn, :public_index), class: "btn-outline" %>
+</section>
+
+<footer class="flex flex-col items-center justify-center flex-grow pb-8 text-gray-400 bg-gray-900">
+  <h4 class="pb-4 mt-8 mb-4 text-center border-b">
+    Memoet is an open source project ❤️
+  </h4>
+  <section class="flex flex-wrap items-center justify-center space-x-8">
+    <a
+      href="mailto:plain@manhtai.com"
+      target="_blank"
+      rel="noreferrer"
+      class="hover:opacity-50"
+    >
+      Email
+    </a>
+    <a
+      href="https://github.com/memoetapp/memoet"
+      target="_blank"
+      rel="noreferrer"
+      class="hover:opacity-50"
+    >
+      GitHub
+    </a>
+    <a
+      href="https://memoet.gitbook.io/docs"
+      target="_blank"
+      class="hover:opacity-50"
+    >
+      Docs
+    </a>
+    <a
+      href="https://memoetapp.github.io/blog"
+      target="_blank"
+      class="hover:opacity-50"
+    >
+      Blog
+    </a>
+  </section>
+</footer>
